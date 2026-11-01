@@ -106,6 +106,5 @@ data class NavItem(
     val icon: ImageVector
 )
 
-private fun Modifier.clickableWithNoRipple(onClick: () -> Unit): Modifier = this.then(
-    androidx.compose.foundation.clickable(onClick = onClick)
-)
+private fun Modifier.clickableWithNoRipple(onClick: () -> Unit): Modifier =
+    this.then(Modifier.clickable(onClick = onClick))
