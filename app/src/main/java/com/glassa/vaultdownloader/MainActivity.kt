@@ -4,25 +4,33 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.glassa.vaultdownloader.ui.components.GlassNavigationBar
+import com.glassa.vaultdownloader.ui.components.NavItem
+import com.glassa.vaultdownloader.ui.navigation.AppNavHost
+import com.glassa.vaultdownloader.ui.navigation.AppScreen
 import com.glassa.vaultdownloader.ui.theme.GlassaTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GlassaVaultDownloaderApp()
+                    GlassaVaultScreen()
                 }
             }
         }
@@ -42,7 +50,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GlassaVaultDownloaderApp() {
+fun GlassaVaultScreen() {
+    val navController = rememberNavController()
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
+    val navItems = listOf(
+        NavItem("Home", Icons.Default.Home),
+        NavItem("Status", Icons.Default.Image),
+        NavItem("Unduhan", Icons.Default.Download),
+        NavItem("Library", Icons.Default.LibraryBooks),
+        NavItem("Setting", Icons.Default.Settings)
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,68 +70,32 @@ fun GlassaVaultDownloaderApp() {
                     colors = listOf(
                         Color(0xFF07111D),
                         Color(0xFF101A2A),
-                        Color(0xFF0F172A)
+                        Color(0xFF111827)
                     )
                 )
             )
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .systemBarsPadding()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        AppNavHost(navController = navController)
+
+        Box(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(Color(0x66121F35))
-                    .padding(28.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "Glassa",
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.8.sp
-                        ),
-                        color = Color(0xFFEAF6FF)
-                    )
-
-                    Text(
-                        text = "Vault Downloader",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = Color(0xFFB7D9FF)
-                    )
-
-                    Text(
-                        text = "Project foundation ready",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF93C5FD)
-                    )
+            GlassNavigationBar(
+                selectedIndex = selectedIndex,
+                items = navItems,
+                onSelected = { index ->
+                    selectedIndex = index
+                    when (index) {
+                        0 -> navController.navigate(AppScreen.HOME.route)
+                        1 -> navController.navigate(AppScreen.STATUS.route)
+                        2 -> navController.navigate(AppScreen.DOWNLOADS.route)
+                        3 -> navController.navigate(AppScreen.LIBRARY.route)
+                        4 -> navController.navigate(AppScreen.SETTINGS.route)
+                    }
                 }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0x66131A2E))
-                    .padding(horizontal = 18.dp, vertical = 14.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = "Liquid Glass foundation initialized",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFD9EAFE)
-                )
-            }
+            )
         }
     }
 }
