@@ -1,6 +1,10 @@
 package com.glassa.vaultdownloader.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +55,11 @@ fun GlassNavigationBar(
         ) {
             items.forEachIndexed { index, item ->
                 val selected = index == selectedIndex
-                val width by animateDpAsState(targetValue = if (selected) 118.dp else 72.dp)
+                val width by animateDpAsState(
+                    targetValue = if (selected) 118.dp else 72.dp,
+                    animationSpec = tween(durationMillis = 220),
+                    label = "nav-tab-width"
+                )
 
                 Box(
                     modifier = Modifier
@@ -72,11 +80,7 @@ fun GlassNavigationBar(
                                 )
                             )
                         )
-                        .then(
-                            Modifier.clickable {
-                                onSelected(index)
-                            }
-                        )
+                        .clickable { onSelected(index) }
                         .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -89,7 +93,12 @@ fun GlassNavigationBar(
                             contentDescription = item.label,
                             tint = if (selected) Color(0xFFEAF6FF) else Color(0xFF9DBDE9)
                         )
-                        if (selected) {
+
+                        AnimatedVisibility(
+                            visible = selected,
+                            enter = fadeIn(animationSpec = tween(180)),
+                            exit = fadeOut(animationSpec = tween(140))
+                        ) {
                             Text(
                                 text = item.label,
                                 style = MaterialTheme.typography.labelLarge,
